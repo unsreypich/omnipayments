@@ -201,15 +201,6 @@ PaymentProviderFactory.register_provider('myprovider', MyProvider)
 provider = get_provider('myprovider', config)
 ```
 
-## 📚 Django Integration
-
-For Django-specific features (models, admin, REST API), use the companion package:
-
-```bash
-pip install django-omnipayments
-```
-
-See: https://github.com/SMEAN-AI/django-omnipayments
 
 ## 🧪 Testing
 
@@ -229,10 +220,6 @@ Contributions welcome! Please see CONTRIBUTING.md
 ## 📄 License
 
 MIT License - see LICENSE file
-
-## 🙏 Credits
-
-Inspired by spree_vpago (Ruby/Rails payment gem)
 
 ---
 
