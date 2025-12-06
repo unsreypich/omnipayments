@@ -3,7 +3,7 @@ Payment Provider Factory
 Manages provider instances and configuration
 """
 from typing import Dict, Any, Optional
-from .providers import BasePaymentProvider, StripeProvider, BakongProvider
+from .providers import BasePaymentProvider, StripeProvider, BakongProvider, PayWayProvider
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ class PaymentProviderFactory:
     _providers = {
         'stripe': StripeProvider,
         'bakong': BakongProvider,
+        'payway': PayWayProvider,
     }
     
     # Cache of instantiated providers
