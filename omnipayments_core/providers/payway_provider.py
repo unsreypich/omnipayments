@@ -32,8 +32,8 @@ class PayWayProvider(BasePaymentProvider):
     
     Configuration required:
     - merchant_id: Your PayWay merchant ID
-    - api_key: API key for authentication
-    - api_secret: API secret for signing requests
+    - private_key: Private key for generating request signatures/hashes
+    - public_key: (Optional) Public key for webhook verification
     - sandbox: Boolean - use sandbox (True) or production (False)
     - return_url: Optional - URL to receive payment status callbacks (whitelisted in merchant profile)
     """
@@ -46,8 +46,8 @@ class PayWayProvider(BasePaymentProvider):
     
     def __init__(self, config: Dict[str, Any]):
         self.merchant_id = None
-        self.api_key = None
-        self.api_secret = None
+        self.private_key = None
+        self.public_key = None
         self.api_url = None
         self.is_sandbox = None
         self.return_url = None
@@ -55,23 +55,28 @@ class PayWayProvider(BasePaymentProvider):
     
     def validate_config(self):
         """Validate PayWay configuration."""
-        required_fields = ['merchant_id', 'api_key', 'api_secret']
+        required_fields = ['merchant_id', 'private_key']
         
         for field in required_fields:
             if field not in self.config:
                 raise ValueError(f"PayWay provider requires '{field}' in configuration")
         
         self.merchant_id = self.config['merchant_id']
-        self.api_key = self.config['api_key']
-        self.api_secret = self.config['api_secret']
+        self.private_key = self.config['private_key']
+        self.public_key = self.config.get('public_key')
         self.is_sandbox = self.config.get('sandbox', True)
         self.api_url = self.SANDBOX_URL if self.is_sandbox else self.PRODUCTION_URL
         self.return_url = self.config.get('return_url')
     
     def _generate_signature(self, payload: str) -> str:
-        """Generate HMAC-SHA256 signature for API requests."""
+        """
+        Generate hash signature for PayWay API requests.
+        
+        PayWay uses hash-based authentication where request parameters
+        are hashed using the merchant's private key.
+        """
         signature = hmac.new(
-            self.api_secret.encode('utf-8'),
+            self.private_key.encode('utf-8'),
             payload.encode('utf-8'),
             hashlib.sha256
         ).hexdigest()
